@@ -9,7 +9,8 @@ import torchvision.transforms as transforms
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-
+        
+        #CNN part: network structure, remember to keep consistence with input dimensions
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=16, kernel_size=2, stride=1)
         self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2, padding=1)
         self.conv2 = nn.Conv2d(in_channels=16, out_channels=32, kernel_size=2, stride=1)
@@ -17,7 +18,8 @@ class CNN(nn.Module):
         self.conv3 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=2, stride=1)
         self.pool3 = nn.MaxPool2d(kernel_size=2, stride=2, padding=1)
         self.conv4 = nn.Conv2d(in_channels=64, out_channels=128, kernel_size=7)
-
+        
+        #fully connected part: network structure
         self.fc1 = nn.Linear(128, 64)
         self.fc2 = nn.Linear(64, 32)
         self.fc3 = nn.Linear(32, 17)
@@ -27,8 +29,8 @@ class CNN(nn.Module):
         x = self.pool2(F.relu(self.conv2(x)))
         x = self.pool3(F.relu(self.conv3(x)))
         x = self.conv4(x)
-
-        x = x.view(-1, 128)
+        
+        x = x.view(-1, 128) #ensure input as a vector
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
@@ -74,10 +76,10 @@ def evaluate(net, data_loader, device='cpu'):
 
 def main():
     transform = transforms.Compose([
-        transforms.Resize([56, 56], interpolation=2),
+        transforms.Resize([56, 56], interpolation=2), #resize, decide input of CNN
         transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
-    )
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))] 
+    ) #pretreatment is vital
 
     train_set = torchvision.datasets.ImageFolder(root='C:/Users/Adrian Chen/3D Objects/data/flowers/train', transform=transform)
 
@@ -95,7 +97,7 @@ def main():
     device = torch.device('cuda:0')
 
     net = CNN()
-    # net.to(device)
+    # net.to(device) #GPU acceleration
 
     xentropy = nn.CrossEntropyLoss()
     optimizer = optim.RMSprop(net.parameters(), lr=0.001)
