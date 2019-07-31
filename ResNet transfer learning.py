@@ -42,15 +42,15 @@ def evaluate(net, data_loader, device='cpu'):
 
 
 def main():
-    net = models.resnet50(pretrained=True)
+    net = models.resnet50(pretrained=True) #download ResNet50
 
     for name, param in net.named_parameters():
-        if name.startswith('fc'):
+        if name.startswith('fc'): #retrain fully connected layers
             param.requires_grad = True
             num_classes = 17
             featureSize = net.fc.in_features
             net.fc = nn.Linear(featureSize, num_classes)
-        else:
+        else: #keep others the same 
             param.requires_grad = False
 
     train_dir = './data/flowers/train'
